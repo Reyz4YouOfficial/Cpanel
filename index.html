@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Dashboard</title>
+
+<style>
+:root{
+    --container-bg:rgba(22,27,34,0.75);
+    --border-color:#30363d;
+    --primary-accent:#58a6ff;
+    --secondary-accent:#a464f4;
+    --input-bg:#11141a;
+    --placeholder-color:#8b949e;
+    --gradient-1:linear-gradient(90deg,#61dafb,#a464f4);
+}
+
+*{box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{
+    margin:0;
+    padding:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#0d1117;
+}
+
+/* WRAPPER UTAMA */
+.wrapper{
+    width:90%;
+    max-width:430px;
+    background:var(--container-bg);
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 0 25px rgba(0,0,0,.6);
+}
+
+/* VIDEO BANNER */
+.banner-video{
+    width:100%;
+    height:180px;
+    overflow:hidden;
+}
+.banner-video video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* LOGIN FORM */
+.container{
+    padding:30px;
+    text-align:center;
+}
+h1{
+    background:var(--gradient-1);
+    -webkit-background-clip:text;
+    color:transparent;
+}
+input{
+    width:100%;
+    padding:13px;
+    margin:10px 0;
+    border-radius:10px;
+    border:1px solid var(--border-color);
+    background:var(--input-bg);
+    color:white;
+    outline:none;
+    transition:.3s;
+}
+input:focus{
+    border-color:var(--primary-accent);
+    box-shadow:0 0 10px var(--primary-accent);
+}
+button{
+    width:100%;
+    padding:13px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+    background:var(--gradient-1);
+    color:black;
+    font-weight:700;
+    cursor:pointer;
+    transition:.4s;
+}
+button:hover{
+    opacity:.85;
+    transform:translateY(-4px);
+}
+button.loading{
+    opacity:.5;
+    cursor:not-allowed;
+}
+
+/* ERROR ANIM */
+@keyframes shake{
+    0%,100%{transform:translateX(0);}
+    20%,60%{transform:translateX(-8px);}
+    40%,80%{transform:translateX(8px);}
+}
+.error{animation:shake .35s ease;}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper" id="loginBox">
+
+    <div class="banner-video">
+        <!-- GANTI VIDEO DISINI -->
+        <video autoplay muted loop playsinline>
+            <source src="https://files.catbox.moe/nomfwn.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div class="container">
+        <h1>Cpanel Website</h1>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Username" required autocomplete="off">
+            <input type="password" id="password" placeholder="Password" required autocomplete="off">
+            <button type="submit" id="loginBtn">Login</button>
+        </form>
+    </div>
+
+</div>
+
+<script>
+const GITHUB_RAW_URL = "https://raw.githubusercontent.com/Reyz4YouOfficial/DBCpanel/refs/heads/main/dbpanel.json";
+
+document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+
+    const btn = document.getElementById("loginBtn");
+    const box = document.getElementById("loginBox");
+    btn.classList.add("loading");
+    btn.textContent="Loading...";
+
+    const username=document.getElementById('username').value.trim();
+    const password=document.getElementById('password').value.trim();
+
+    try{
+        const res=await fetch(GITHUB_RAW_URL);
+        if(!res.ok)throw new Error("Gagal mengambil data!");
+
+        const users=await res.json();
+        const user=users.find(u=>u.username===username && u.password===password);
+
+        if(user){
+            localStorage.setItem("userData", JSON.stringify(user));
+            btn.textContent="Berhasil!";
+            btn.style.background="lime";
+            setTimeout(()=>window.location.href="cpanel.html",700);
+        } else {
+            box.classList.add("error");
+            setTimeout(()=>box.classList.remove("error"),350);
+            btn.classList.remove("loading");
+            btn.textContent="Login";
+            alert("Username atau password salah!");
+        }
+
+    }catch(err){
+        alert("Error: "+err.message);
+        btn.classList.remove("loading");
+        btn.textContent="Login";
+    }
+});
+</script>
+
+</body>
+</html>
