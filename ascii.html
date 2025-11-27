@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASCII Art Generator - Galaxy</title>
+  <style>
+    * {margin:0; padding:0; box-sizing:border-box; font-family: "Poppins", sans-serif;}
+
+    body {
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      background: radial-gradient(circle at top, #1a0033, #000);
+      color:#fff;
+      overflow-x:hidden;
+    }
+
+    /* Galaxy Stars */
+    .stars {
+      position:fixed;
+      width:100%;
+      height:100%;
+      z-index:-1;
+      background:transparent;
+      overflow:hidden;
+    }
+    .stars span {
+      position:absolute;
+      width:2px;
+      height:2px;
+      background:white;
+      border-radius:50%;
+      animation: twinkle 3s infinite ease-in-out;
+    }
+    @keyframes twinkle {
+      0%,100% {opacity:0.2;}
+      50% {opacity:1;}
+    }
+
+    header {
+      text-align:center;
+      border-bottom:1px solid rgba(255,255,255,0.15);
+      padding-bottom:10px;
+    }
+    header img {
+      width:100%;
+      max-height:250px;
+      object-fit:cover;
+      border-bottom:2px solid rgba(255,255,255,0.3);
+    }
+    header h1 {
+      font-size:1.8rem;
+      font-weight:800;
+      margin:10px 0;
+      letter-spacing:2px;
+      text-shadow:0 0 12px #ff00ff;
+    }
+    .menu {
+      display:flex;
+      justify-content:center;
+      gap:15px;
+      margin:10px 0;
+    }
+    .btn {
+      border:none;
+      padding:8px 14px;
+      border-radius:50px;
+      cursor:pointer;
+      background:rgba(255,255,255,0.1);
+      color:inherit;
+      font-size:0.9rem;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      transition:0.3s;
+      backdrop-filter: blur(4px);
+    }
+    .btn:hover {transform:scale(1.1); box-shadow:0 0 8px #0ff;}
+    
+    main {
+      flex:1;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
+      padding:20px;
+    }
+    .card {
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.2);
+      border-radius:16px;
+      padding:20px;
+      box-shadow:0 4px 15px rgba(0,0,0,0.6);
+      backdrop-filter:blur(8px);
+    }
+    .card h2 {
+      font-size:1.1rem;
+      margin-bottom:12px;
+    }
+    input[type="file"], input[type="text"] {
+      margin-bottom:12px;
+      cursor:pointer;
+      width:100%;
+      padding:6px;
+      border-radius:6px;
+      border:1px solid rgba(255,255,255,0.3);
+      background:rgba(255,255,255,0.1);
+      color:#fff;
+    }
+    input::placeholder {color:#aaa;}
+
+    .ascii-output {
+      background:#000;
+      color:#0f0;
+      font-family:monospace;
+      font-size:10px;
+      line-height:10px;
+      white-space:pre;
+      overflow:auto;
+      max-height:600px;
+      border-radius:12px;
+      padding:12px;
+    }
+
+    @media(max-width:768px){
+      main{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+  <!-- Galaxy Stars -->
+  <div class="stars" id="stars"></div>
+
+  <header>
+    <img src="https://files.catbox.moe/5wdm9y.jpg" alt="Header Image" id="headerImg">
+    <h1>ASCII GENERATOR </h1>
+    <div class="menu">
+      <button class="btn" id="themeBtn"></button>
+      <button class="btn"></button>
+      <button class="btn"></button>
+    </div>
+    <div style="margin-top:10px;">
+      <input type="text" id="imgUrl" placeholder="Masukkan link gambar header (19:6)">
+      <button class="btn" id="setHeader">Set Header</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Upload Section -->
+    <div class="card">
+      <h2>Upload Foto (16:9)</h2>
+      <input type="file" id="fileInput" accept="image/*">
+      <button class="btn" id="genBtn">🖼 Generate ASCII</button>
+    </div>
+
+    <!-- ASCII Output -->
+    <div class="card">
+      <div class="ascii-output" id="asciiBox">
+        Upload foto untuk generate ASCII...
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ==== STAR FIELD ====
+    const starsContainer = document.getElementById("stars");
+    for(let i=0;i<100;i++){
+      let s=document.createElement("span");
+      s.style.top=Math.random()*100+"%";
+      s.style.left=Math.random()*100+"%";
+      s.style.animationDuration=(2+Math.random()*3)+"s";
+      starsContainer.appendChild(s);
+    }
+
+    // ==== THEME ====
+    const themeBtn = document.getElementById("themeBtn");
+    themeBtn.addEventListener("click",()=>{
+      if(document.body.style.background.includes("#000")){
+        document.body.style.background="radial-gradient(circle at top, #330033, #111)";
+      } else {
+        document.body.style.background="radial-gradient(circle at top, #1a0033, #000)";
+      }
+    });
+
+    // ==== HEADER IMAGE ====
+    const setHeaderBtn = document.getElementById("setHeader");
+    const headerImg = document.getElementById("headerImg");
+    const imgUrlInput = document.getElementById("imgUrl");
+    setHeaderBtn.addEventListener("click",()=>{
+      if(imgUrlInput.value.trim()!==""){
+        headerImg.src=imgUrlInput.value.trim();
+      }
+    });
+
+    // ==== ASCII GENERATOR ====
+    const fileInput = document.getElementById("fileInput");
+    const genBtn = document.getElementById("genBtn");
+    const asciiBox = document.getElementById("asciiBox");
+    let currentFile = null;
+
+    fileInput.addEventListener("change",(e)=>{
+      currentFile = e.target.files[0];
+    });
+
+    genBtn.addEventListener("click",()=>{
+      if(!currentFile) {
+        alert("Pilih file gambar dulu!");
+        return;
+      }
+      generateAscii(currentFile);
+    });
+
+    function generateAscii(file){
+      const reader = new FileReader();
+      reader.onload = (event)=>{
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = ()=>{
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          const width = 100;
+          const height = (img.height/img.width)*width*0.55;
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img,0,0,width,height);
+
+          const chars = " .:-=+*#%@";
+          let asciiStr = "";
+          const imageData = ctx.getImageData(0,0,width,height);
+          for(let y=0;y<height;y++){
+            let row="";
+            for(let x=0;x<width;x++){
+              const offset=(y*width+x)*4;
+              const r=imageData.data[offset];
+              const g=imageData.data[offset+1];
+              const b=imageData.data[offset+2];
+              const avg=(r+g+b)/3;
+              const char=chars[Math.floor((avg/255)*(chars.length-1))];
+              row+=char;
+            }
+            asciiStr+=row+"\n";
+          }
+          asciiBox.textContent=asciiStr;
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+  </script>
+</body>
+</html>
