@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pinterest Search</title>
+
+<style>
+    :root {
+        --bg: #000000;
+        --bg-light: #1a1a1a;
+        --accent: #ff4ea9;
+        --accent-light: #ff68b7;
+        --white: #fff;
+        --shadow: rgba(0,0,0,.4);
+        --radius: 14px;
+    }
+
+    /* BODY */
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: var(--bg);
+        margin: 0;
+        padding: 0;
+        color: var(--white);
+    }
+
+    /* HEADER */
+    header {
+        background: var(--bg-light);
+        padding: 15px 20px;
+        font-size: 23px;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        border-bottom: 1px solid #333;
+        box-shadow: 0 3px 15px rgba(0,0,0,.7);
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .pin-icon {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+    }
+
+    .menu-btn {
+        font-size: 32px;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: var(--radius);
+        transition: .2s;
+        color: var(--white);
+    }
+    .menu-btn:hover {
+        background: rgba(255,255,255,.1);
+    }
+
+    /* SIDEBAR */
+    #sidebar {
+        width: 260px;
+        height: 100vh;
+        background: #111;
+        position: fixed;
+        left: 0;
+        top: 0;
+        transform: translateX(-100%);
+        transition: .35s ease-in-out;
+        padding: 25px 18px;
+        z-index: 50;
+        box-shadow: 0 0 25px var(--shadow);
+    }
+    #sidebar.active { transform: translateX(0); }
+
+    .sidebar-item {
+        padding: 13px;
+        margin-bottom: 12px;
+        background: var(--accent);
+        color: white;
+        border-radius: var(--radius);
+        text-align: center;
+        cursor: pointer;
+        font-weight: 600;
+        transition: .25s;
+        box-shadow: 0 3px 10px var(--shadow);
+    }
+    .sidebar-item:hover {
+        background: var(--accent-light);
+        transform: translateX(5px);
+    }
+
+    /* OVERLAY */
+    #overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+        display: none;
+        z-index: 40;
+    }
+    #overlay.show { display: block; }
+
+
+    /* SEARCH BOX */
+    #searchBox {
+        padding: 20px;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 14px;
+        border-radius: var(--radius);
+        border: none;
+        outline: none;
+        font-size: 16px;
+        margin-bottom: 10px;
+        background: #222;
+        color: var(--white);
+        box-shadow: 0 3px 10px var(--shadow);
+    }
+
+
+    /* 🔥 BUTTON SHINE ANIMATION */
+    button {
+        width: 100%;
+        padding: 12px;
+        background: var(--accent);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        border-radius: var(--radius);
+        transition: .25s;
+        box-shadow: 0 3px 10px var(--shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+    button:hover {
+        background: var(--accent-light);
+        transform: scale(1.03);
+    }
+
+    button::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -80%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(
+            120deg,
+            transparent,
+            rgba(255, 255, 255, 0.6),
+            transparent
+        );
+        transform: skewX(-25deg);
+        animation: shine 2s infinite linear;
+    }
+    @keyframes shine {
+        0% { left: -80%; }
+        100% { left: 130%; }
+    }
+
+
+    /* GRID */
+    #results {
+        padding: 15px;
+        column-count: 2;
+        column-gap: 12px;
+    }
+    @media(min-width:700px) {
+        #results { column-count: 3; }
+    }
+    .card {
+        background: white;
+        margin-bottom: 15px;
+        border-radius: var(--radius);
+        overflow: hidden;
+        break-inside: avoid;
+        box-shadow: 0 4px 15px var(--shadow);
+        transition: .25s;
+    }
+    .card:hover {
+        transform: translateY(-4px);
+    }
+    .card img {
+        width: 100%;
+    }
+
+    .btn-group {
+        padding: 8px 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .btn-group button {
+        background: var(--accent);
+        border-radius: var(--radius);
+    }
+
+
+    /* SAVED PAGE */
+    #savedPage {
+        display: none;
+        padding: 20px;
+        color: var(--white);
+    }
+    .saved-card {
+        background: #fff;
+        padding: 12px;
+        border-radius: var(--radius);
+        margin-bottom: 15px;
+        box-shadow: 0 4px 15px var(--shadow);
+        color: black;
+    }
+    .saved-card img {
+        width: 100%;
+        border-radius: var(--radius);
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <span class="logo">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Pinterest-logo.png" class="pin-icon">
+        Pinterest Search
+    </span>
+    <div class="menu-btn" onclick="toggleSidebar()">☰</div>
+</header>
+
+<div id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+    <div class="sidebar-item" onclick="showSearch()">Pencarian</div>
+    <div class="sidebar-item" onclick="showSaved()">Saya</div>
+</div>
+
+<!-- SEARCH PAGE -->
+<div id="searchBox">
+    <input type="text" id="query" placeholder="Masukkan kata kunci...">
+    <button onclick="searchImages()">Cari Gambar</button>
+</div>
+
+<div id="results"></div>
+
+<!-- SAVED PAGE -->
+<div id="savedPage">
+    <h2 style="color:white;">Gambar Tersimpan</h2>
+    <button onclick="clearAllSaved()">Hapus Semua</button>
+    <div id="savedList"></div>
+</div>
+
+<script>
+function toggleSidebar() {
+    const side = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+    side.classList.toggle("active");
+    overlay.classList.toggle("show");
+}
+
+function showSaved() {
+    document.getElementById("searchBox").style.display = "none";
+    document.getElementById("results").style.display = "none";
+    document.getElementById("savedPage").style.display = "block";
+    toggleSidebar();
+    loadSavedImages();
+}
+
+function showSearch() {
+    document.getElementById("savedPage").style.display = "none";
+    document.getElementById("searchBox").style.display = "block";
+    document.getElementById("results").style.display = "block";
+    toggleSidebar();
+}
+
+let page = 1;
+let loading = false;
+let lastQuery = "";
+
+async function searchImages(reset = true) {
+    const query = document.getElementById("query").value.trim();
+    if (!query) return;
+
+    if (reset) {
+        document.getElementById("results").innerHTML = "";
+        page = 1;
+    }
+
+    lastQuery = query;
+    loading = true;
+
+    const url = `https://api.baguss.xyz/api/search/pinterest?q=${encodeURIComponent(query)}`;
+    let res = await fetch(url);
+    let json = await res.json();
+
+    json.results.slice(0,60).forEach(img => {
+        addImageCard(img.image_url);
+    });
+
+    loading = false;
+}
+
+function addImageCard(url) {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+        <img src="${url}">
+        <div class="btn-group">
+            <button onclick="downloadImage('${url}')">Download</button>
+            <button onclick="copyLink('${url}')">Copy Link</button>
+            <button onclick="saveImage('${url}')">Simpan</button>
+        </div>
+    `;
+
+    document.getElementById("results").appendChild(card);
+}
+
+window.addEventListener("scroll", () => {
+    if (loading) return;
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+        searchImages(false);
+    }
+});
+
+function saveImage(url) {
+    let saved = JSON.parse(localStorage.getItem("savedImages") || "[]");
+    if (!saved.includes(url)) {
+        saved.push(url);
+        localStorage.setItem("savedImages", JSON.stringify(saved));
+        alert("Gambar disimpan!");
+    }
+}
+
+function loadSavedImages() {
+    let list = document.getElementById("savedList");
+    let saved = JSON.parse(localStorage.getItem("savedImages") || "[]");
+    list.innerHTML = "";
+
+    if (saved.length === 0) {
+        list.innerHTML = "<p style='color:white;'>Belum ada gambar disimpan.</p>";
+        return;
+    }
+
+    saved.forEach(url => {
+        let box = document.createElement("div");
+        box.className = "saved-card";
+        box.innerHTML = `
+            <img src="${url}">
+            <button style="margin-top:10px;background:#ff2f98;color:white;" onclick="deleteSavedImage('${url}')">Hapus</button>
+        `;
+        list.appendChild(box);
+    });
+}
+
+function deleteSavedImage(url) {
+    let saved = JSON.parse(localStorage.getItem("savedImages") || "[]");
+    saved = saved.filter(x => x !== url);
+    localStorage.setItem("savedImages", JSON.stringify(saved));
+    loadSavedImages();
+}
+
+function clearAllSaved() {
+    if (confirm("Yakin hapus semua?")) {
+        localStorage.removeItem("savedImages");
+        loadSavedImages();
+    }
+}
+
+function copyLink(url) {
+    navigator.clipboard.writeText(url);
+    alert("Link disalin!");
+}
+
+function downloadImage(url) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "image.jpg";
+    a.click();
+}
+</script>
+
+</body>
+</html>
