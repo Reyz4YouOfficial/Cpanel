@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureCode Obfuscator Pro</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #0ea5e9;
+            --dark: #1e293b;
+            --darker: #0f172a;
+            --light: #f1f5f9;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 20px auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+        
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title svg {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--light);
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--light);
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .file-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .file-label:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .result {
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            min-height: 100px;
+            max-height: 300px;
+            overflow-y: auto;
+            color: var(--light);
+            font-family: 'Fira Code', 'Courier New', monospace;
+            white-space: pre-wrap;
+        }
+        
+        .terminal {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            color: var(--success);
+            height: 150px;
+            overflow-y: auto;
+        }
+        
+        .terminal-line {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .badge-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .badge-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .flex-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .flex-group > * {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @media (max-width: 768px) {
+            .flex-group {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SecureCode Obfuscator Pro</h1>
+            <p class="subtitle">Protect your source code with military-grade obfuscation technology</p>
+        </header>
+        
+        <div class="flex-group">
+            <div class="card">
+                <h2 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Source Code Input
+                </h2>
+                
+                <div class="input-group">
+                    <label for="codeInput">Paste your code or upload a file</label>
+                    <textarea id="codeInput" placeholder="Paste your JavaScript, HTML or CSS code here..."></textarea>
+                </div>
+                
+                <div class="file-actions">
+                    <input type="file" id="fileUpload" class="file-input" accept=".js,.html,.css,.txt">
+                    <label for="fileUpload" class="file-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+                        </svg>
+                        Upload File
+                    </label>
+                    
+                    <button class="btn" onclick="obfuscateCode()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5 3a3 3 0 0 0 0 6h2a3 3 0 1 0 0-6H5z"/>
+                            <path d="M2 7a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0v-2.531A4 4 0 0 1 2 7z"/>
+                        </svg>
+                        Obfuscate Code
+                    </button>
+                    
+                    <button class="btn btn-secondary" onclick="clearCode()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                        </svg>
+                        Clear
+                    </button>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress" id="uploadProgress"></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    Obfuscated Output
+                </h2>
+                
+                <div class="result" id="output">Obfuscated code will appear here...</div>
+                
+                <div class="file-actions">
+                    <button class="btn btn-success" onclick="downloadCode()" id="downloadBtn" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Download Obfuscated Code
+                    </button>
+                    
+                    <button class="btn" onclick="copyToClipboard()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                            <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                        </svg>
+                        Copy to Clipboard
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 class="card-title">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+                Processing Log
+            </h2>
+            
+            <div class="terminal">
+                <div class="terminal-line">> System initialized</div>
+                <div class="terminal-line">> SecureCode Obfuscator Pro v2.1 ready</div>
+                <div class="terminal-line">> Waiting for user input...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Handle file upload
+        document.getElementById('fileUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            const progressBar = document.getElementById('uploadProgress');
+            
+            // Simulate progress for better UX
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 5;
+                progressBar.style.width = `${progress}%`;
+                if (progress >= 100) clearInterval(progressInterval);
+            }, 50);
+            
+            reader.onload = function(e) {
+                document.getElementById('codeInput').value = e.target.result;
+                progressBar.style.width = '100%';
+                addTerminalLine(`> File "${file.name}" uploaded successfully (${formatFileSize(file.size)})`);
+                
+                setTimeout(() => {
+                    progressBar.style.width = '0%';
+                }, 1000);
+            };
+            
+            reader.readAsText(file);
+        });
+        
+        // Format file size to human readable format
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' bytes';
+            else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            else return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+        
+        // Advanced obfuscation function
+        function obfuscateCode() {
+            const input = document.getElementById('codeInput').value;
+            if (!input.trim()) {
+                addTerminalLine("> Error: No input detected");
+                return;
+            }
+            
+            addTerminalLine("> Obfuscation process initiated");
+            addTerminalLine("> Analyzing code structure...");
+            
+            // Show processing animation
+            const outputElement = document.getElementById('output');
+            outputElement.textContent = "Obfuscating your code...";
+            outputElement.classList.add('pulse');
+            
+            // Use setTimeout to allow UI to update before intensive processing
+            setTimeout(() => {
+                try {
+                    // Multiple layers of obfuscation
+                    let obfuscated = applyBase64Encoding(input);
+                    obfuscated = applyCharCodeConversion(obfuscated);
+                    obfuscated = applyStringReversal(obfuscated);
+                    obfuscated = applyCustomCipher(obfuscated);
+                    
+                    // Final output with executor wrapper
+                    const randomString = generateRandomHex(6);
+                    const finalOutput = `(function(){ 
+                        const _0x${randomString} = ['${obfuscated}'];
+                        return eval(atob(_0x${randomString}[0].split('').map(function(c){
+                            return String.fromCharCode(c.charCodeAt(0) - 5);
+                        }).join('')).split('').map(function(c){
+                            return String.fromCharCode(c.charCodeAt(0) + 3);
+                        }).join('')).split('').reverse().join(''));
+                    })();`;
+                    
+                    outputElement.textContent = finalOutput;
+                    outputElement.classList.remove('pulse');
+                    
+                    // Enable download button
+                    document.getElementById('downloadBtn').disabled = false;
+                    
+                    addTerminalLine("> Obfuscation complete - Code secured");
+                    addTerminalLine("> Output size: " + formatFileSize(finalOutput.length));
+                } catch (error) {
+                    addTerminalLine("> Error during obfuscation: " + error.message);
+                    outputElement.textContent = "Error: " + error.message;
+                    outputElement.classList.remove('pulse');
+                }
+            }, 1000);
+        }
+        
+        // Apply Base64 encoding
+        function applyBase64Encoding(str) {
+            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+                return String.fromCharCode('0x' + p1);
+            }));
+        }
+        
+        // Apply character code conversion
+        function applyCharCodeConversion(str) {
+            let result = '';
+            for (let i = 0; i < str.length; i++) {
+                result += String.fromCharCode(str.charCodeAt(i) + 3);
+            }
+            return result;
+        }
+        
+        // Apply string reversal
+        function applyStringReversal(str) {
+            return str.split('').reverse().join('');
+        }
+        
+        // Apply custom cipher
+        function applyCustomCipher(str) {
+            const chars = str.split('');
+            for (let i = 0; i < chars.length; i++) {
+                if (i % 2 === 0) {
+                    chars[i] = String.fromCharCode(chars[i].charCodeAt(0) + 2);
+                } else {
+                    chars[i] = String.fromCharCode(chars[i].charCodeAt(0) - 1);
+                }
+            }
+            return chars.join('');
+        }
+        
+        // Generate random hex string
+        function generateRandomHex(length) {
+            let result = '';
+            const characters = 'abcdef0123456789';
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+        
+        // Download the obfuscated code
+        function downloadCode() {
+            const code = document.getElementById('output').textContent;
+            if (!code.trim() || code === "Obfuscated code will appear here...") {
+                addTerminalLine("> Error: No obfuscated code to download");
+                return;
+            }
+            
+            const blob = new Blob([code], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'obfuscated-code.js';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            addTerminalLine("> Obfuscated code downloaded as obfuscated-code.js");
+        }
+        
+        // Copy to clipboard
+        function copyToClipboard() {
+            const code = document.getElementById('output').textContent;
+            if (!code.trim() || code === "Obfuscated code will appear here...") {
+                addTerminalLine("> Error: No obfuscated code to copy");
+                return;
+            }
+            
+            navigator.clipboard.writeText(code).then(() => {
+                addTerminalLine("> Obfuscated code copied to clipboard");
+            }).catch(err => {
+                addTerminalLine("> Failed to copy: " + err);
+            });
+        }
+        
+        // Clear all inputs
+        function clearCode() {
+            document.getElementById('codeInput').value = '';
+            document.getElementById('output').textContent = 'Obfuscated code will appear here...';
+            document.getElementById('downloadBtn').disabled = true;
+            document.getElementById('fileUpload').value = '';
+            addTerminalLine("> Input cleared - Ready for new code");
+        }
+        
+        // Add line to terminal
+        function addTerminalLine(text) {
+            const terminal = document.querySelector('.terminal');
+            const line = document.createElement('div');
+            line.className = 'terminal-line';
+            line.textContent = text;
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+            
+            // Keep terminal at a reasonable size
+            if (terminal.children.length > 50) {
+                terminal.removeChild(terminal.children[0]);
+            }
+        }
+        
+        // Initialize
+        window.onload = function() {
+            addTerminalLine("> SecureCode Obfuscator Pro initialized");
+            addTerminalLine("> Ready to process your code");
+        };
+    </script>
+</body>
+</html>
