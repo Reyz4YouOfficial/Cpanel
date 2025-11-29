@@ -147,7 +147,7 @@ button:hover{
 
 /* ROLE COLORS */
 .role-owner{background:#ff2e2e;} /* MERAH */
-.role-admin{background:#ffd700;} /* KUNING */
+.role-staf{background:#ffd700;} /* KUNING */
 .role-tangan{background:#18a0ff;} /* BIRU */
 .role-reseller{background:#00d26a;} /* HIJAU */
 
@@ -270,7 +270,7 @@ function loadDashboard(user){
 
     let roleClass="";
     if(user.role.toLowerCase().includes("owner")) roleClass="role-owner";
-    else if(user.role.toLowerCase().includes("admin")) roleClass="role-admin";
+    else if(user.role.toLowerCase().includes("staf")) roleClass="role-staf";
     else if(user.role.toLowerCase().includes("tangan")) roleClass="role-tangan";
     else if(user.role.toLowerCase().includes("reseller")) roleClass="role-reseller";
 
