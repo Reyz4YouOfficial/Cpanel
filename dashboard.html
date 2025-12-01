@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reyz4You Host Dashboard</title>
+<style>
+    body {
+        margin:0;
+        background:#0f1117;
+        color:#fff;
+        font-family: Arial, sans-serif;
+        text-align:center;
+    }
+
+    header video {
+        width:100%;
+        border-bottom:3px solid #00aaff;
+    }
+
+    h2 {
+        margin:16px 0;
+        font-size:22px;
+        font-weight:bold;
+    }
+
+    .menu-container {
+        display:grid;
+        grid-template-columns:repeat(2, 1fr);
+        gap:12px;
+        width:92%;
+        margin:12px auto 40px;
+    }
+
+    .menu-card {
+        background:#161b22;
+        padding:20px;
+        border-radius:12px;
+        cursor:pointer;
+        transition:0.25s;
+        border:1px solid transparent;
+        font-size:16px;
+        font-weight:bold;
+    }
+
+    .menu-card:hover {
+        background:#1f2630;
+        border-color:#007bff;
+        transform:scale(1.03);
+    }
+
+    @media(max-width:600px) {
+        .menu-container {
+            grid-template-columns:1fr;
+        }
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <!-- 🎬 BANNER VIDEO -->
+    <video autoplay muted loop playsinline>
+        <source src="https://files.catbox.moe/nomfwn.mp4" type="video/mp4">
+    </video>
+</header>
+
+<h2>🔥 Reyz4You Host Dashboard</h2>
+
+<div class="menu-container">
+    <div class="menu-card" onclick="go('cpanel.html')">⚙ Create Panel</div>
+    <div class="menu-card" onclick="go('pin.html')">📌 Pin Screach</div>
+    <div class="menu-card" onclick="go('getsource.html')">Get Source</div>
+    <div class="menu-card" onclick="go('tiktok.html')">🎧 Tiktok Download</div>
+    <div class="menu-card" onclick="go('ascii.html')">Ascii</div>
+    <div class="menu-card" onclick="go('fakecall.html')">🛠 Fake Call Whatsapp</div>
+</div>
+
+<script>
+function go(page) {
+    window.location.href = page;
+}
+</script>
+
+</body>
+</html>
