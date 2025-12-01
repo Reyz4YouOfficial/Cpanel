@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Cpanel By NexulTzy - Fixed</title>
+
+    <!-- CSS (full, as original but kept concise where possible) -->
+    <style>
+        :root{
+            --bg-color:#0d1117;--container-bg:#161b22;--border-color:#30363d;--text-color:#c9d1d9;
+            --primary-accent:#58a6ff;--secondary-accent:#a464f4;--success-color:#3fb950;--error-color:#f85149;
+            --input-bg:#11141a;--placeholder-color:#8b949e;--shadow-color:rgba(0,0,0,.7);
+            --gradient-1:linear-gradient(90deg,#61dafb 0%,#a464f4 100%);
+            --gradient-2:linear-gradient(90deg,#a464f4 0%,#61dafb 100%);
+        }
+        *{box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg-color);color:var(--text-color);margin:0;padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;overflow-y:auto;overflow-x:hidden;position:relative;}
+        .background-particles{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:0;}
+        .particle{position:absolute;background:var(--primary-accent);opacity:.2;border-radius:50%;animation:moveParticle 15s infinite ease-in-out;}
+        .particle:nth-child(2){background:var(--secondary-accent);animation-duration:20s;left:30%;top:60%;width:80px;height:80px;animation-delay:2s;}
+        .particle:nth-child(3){animation-duration:18s;left:70%;top:20%;width:50px;height:50px;animation-delay:0s;}
+        .particle:nth-child(4){animation-duration:25s;left:10%;top:10%;width:100px;height:100px;animation-delay:5s;}
+        .particle:nth-child(5){animation-duration:22s;left:5%;top:40%;width:55px;height:55px;animation-delay:8s;}
+        @keyframes moveParticle{0%{transform:translate(0,0) scale(1);opacity:.2;}25%{transform:translate(20vw,30vh) scale(1.2);opacity:.3;}50%{transform:translate(50vw,-10vh) scale(.8);opacity:.1;}75%{transform:translate(80vw,40vh) scale(1.1);opacity:.25;}100%{transform:translate(0,0) scale(1);opacity:.2;}}
+        .container{background:var(--container-bg);padding:40px;border-radius:15px;box-shadow:0 15px 40px var(--shadow-color);border:1px solid var(--border-color);width:100%;max-width:700px;box-sizing:border-box;position:relative;z-index:10;opacity:0;transform:translateY(20px) scale(.95);animation:containerEntry .6s ease-out forwards .3s;display:flex;flex-direction:column;align-items:center;margin:20px auto;}
+        @keyframes containerEntry{to{opacity:1;transform:translateY(0) scale(1);}}
+        h1{font-family:'Orbitron',sans-serif;text-align:center;color:var(--primary-accent);margin-bottom:35px;font-size:2.2em;font-weight:700;letter-spacing:.05em;text-shadow:0 0 10px rgba(97,218,251,.4);margin:0 0 20px 0;}
+        .form-row{display:flex;gap:16px;width:100%}
+        .form-group{margin-bottom:18px;position:relative;width:100%}
+        label{display:block;margin-bottom:8px;font-size:.9em;color:var(--text-color);font-weight:500;transition:color .2s;}
+        .input-glow-border{width:100%;padding:12px 14px;border:1px solid var(--border-color);border-radius:8px;background:var(--input-bg);color:var(--text-color);font-size:1em;box-sizing:border-box;transition:border-color .3s,box-shadow .3s;}
+        .input-glow-border:focus{border-color:var(--primary-accent);box-shadow:0 0 0 3px rgba(97,218,251,.12);outline:none;}
+        select.input-glow-border{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:none;padding-right:36px;}
+        .cyber-button{width:100%;padding:14px 18px;background:var(--gradient-1);color:var(--bg-color);border:none;border-radius:8px;font-size:1.05em;font-weight:700;cursor:pointer;transition:all .3s;margin-top:8px;box-shadow:0 8px 20px rgba(0,0,0,.3);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;letter-spacing:.05em;text-transform:uppercase;}
+        .cyber-button:hover{background:var(--gradient-2);transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.4);}
+        .cyber-button:active{transform:translateY(0);box-shadow:0 4px 10px rgba(0,0,0,.2);}
+        .cyber-button:disabled{background:linear-gradient(90deg,#30363d 0%,#3d444e 100%);color:#8b949e;cursor:not-allowed;transform:none;box-shadow:none;}
+        .loader-dots{display:flex;align-items:center;justify-content:center;margin-left:10px;width:30px;height:18px;display:none;}
+        .dot{width:8px;height:8px;border-radius:50%;background:#fff;margin:0 3px;animation:bounce .6s infinite alternate;}
+        .dot:nth-child(2){animation-delay:.2s;}
+        .dot:nth-child(3){animation-delay:.4s;}
+        @keyframes bounce{to{transform:translateY(-5px);}}
+        #responseMessage{margin-top:20px;padding:20px;border-radius:12px;background:var(--container-bg);border:1px solid var(--border-color);box-shadow:0 8px 20px var(--shadow-color);opacity:0;transform:translateY(10px);animation:messageEntry .4s ease-out forwards;min-width:100%;}
+        @keyframes messageEntry{to{opacity:1;transform:translateY(0);}}
+        #responseMessage.success{border-color:var(--success-color);box-shadow:0 8px 20px rgba(63,185,80,.12);}
+        #responseMessage.error{border-color:var(--error-color);box-shadow:0 8px 20px rgba(248,81,73,.12);}
+        .result-title{font-family:'Orbitron',sans-serif;font-size:1.3em;font-weight:700;color:var(--success-color);text-align:center;margin-bottom:12px;padding-bottom:10px;border-bottom:1px dashed rgba(255,255,255,.04);}
+        .result-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:5px;border-bottom:1px dashed rgba(255,255,255,.03);}
+        .result-row:last-of-type{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+        .result-row span:first-child{font-weight:600;color:var(--placeholder-color);min-width:110px;padding-right:10px;}
+        .result-row span:last-child{flex-grow:1;text-align:right;color:var(--text-color);word-break:break-all;font-weight:700;}
+        .result-row a{color:var(--primary-accent)!important;text-decoration:none;transition:color .2s;}
+        .result-row a:hover{color:var(--secondary-accent)!important;text-decoration:underline;}
+        .result-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px;padding-top:12px;border-top:1px solid var(--border-color);}
+        .result-actions button{flex:1 1 calc(50% - 10px);max-width:calc(50% - 5px);padding:10px 12px;font-size:.9em;margin-top:0;box-shadow:none;background:linear-gradient(90deg,#3a424e 0%,#444c56 100%);color:var(--text-color);border:1px solid var(--border-color);white-space:nowrap;transition:all .2s;border-radius:8px;}
+        .result-actions button:hover{background:linear-gradient(90deg,#444c56 0%,#3a424e 100%);transform:translateY(-1px);}
+        .result-actions button.login-panel-button{background:var(--gradient-1);color:var(--bg-color);border-color:transparent;}
+        .result-actions button.login-panel-button:hover{background:var(--gradient-2);}
+        .copy-all-button{width:100%;margin-top:12px;background:var(--gradient-1);color:var(--bg-color);font-size:.95em;padding:12px;border-radius:8px;transition:all .3s;border:none}
+        .copy-all-button:hover{background:var(--gradient-2);transform:translateY(-2px)}
+        .contact-message{font-size:.85em;color:var(--placeholder-color);text-align:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--border-color);}
+        .contact-message a{color:var(--primary-accent);text-decoration:none;font-weight:600;}
+        #toast-notification-container{position:fixed;top:20px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:10px}
+        .toast-notification{background:var(--container-bg);border:1px solid var(--border-color);border-radius:8px;padding:12px 16px;box-shadow:0 4px 15px rgba(0,0,0,.2);display:flex;align-items:center;gap:10px;color:var(--text-color);min-width:250px;max-width:380px;font-size:.95em;font-weight:600;animation:slideInRight .3s ease-out forwards,toastFadeOut .5s ease-in forwards 2.6s;transform:translateX(100%);opacity:0;}
+        .toast-notification.success{border-left:4px solid var(--success-color);} .toast-notification.error{border-left:4px solid var(--error-color);} .toast-notification.info{border-left:4px solid var(--primary-accent);}
+        .toast-notification .icon{font-size:1.2em;line-height:1;}
+        .toast-notification .close-btn{background:none;border:none;color:var(--placeholder-color);font-size:1.1em;cursor:pointer;padding:0 6px;transition:color .2s}
+        .toast-notification .close-btn:hover{color:var(--text-color)}
+        @keyframes slideInRight{to{transform:translateX(0);opacity:1;}}
+        @keyframes toastFadeOut{from{opacity:1;}to{opacity:0;}}
+        @media (max-width:640px){.form-row{flex-direction:column}.container{padding:20px}}
+    </style>
+</head>
+<body>
+
+<!-- Background Particles -->
+<div class="background-particles" aria-hidden="true">
+    <div class="particle" style="width:60px;height:60px;left:10%;top:10%;"></div>
+    <div class="particle" style="width:40px;height:40px;left:80%;top:30%;"></div>
+    <div class="particle" style="width:90px;height:90px;left:20%;top:80%;"></div>
+    <div class="particle" style="width:70px;height:70px;left:60%;top:5%;"></div>
+    <div class="particle" style="width:55px;height:55px;left:5%;top:40%;"></div>
+</div>
+
+<!-- Main Container -->
+<div class="container" role="main" aria-labelledby="mainTitle">
+    <h1 id="mainTitle">CREATE PANEL</h1>
+    <form id="createPanelForm" autocomplete="off" novalidate>
+        <div class="form-row" style="margin-bottom:8px">
+            <div class="form-group" style="flex:1">
+                <label for="accessKey">Access Key:</label>
+                <input type="password" id="accessKey" name="accessKey" placeholder="Masukkan Access Key Anda" class="input-glow-border" required>
+            </div>
+            <div class="form-group" style="width:220px">
+                <label for="panelType">Tipe Panel:</label>
+                <select id="panelType" name="panelType" class="input-glow-border" required>
+                    <option value="" disabled selected>Pilih Tipe Panel</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" placeholder="Contoh: user_keren2025" class="input-glow-border" required minlength="4" maxlength="16" pattern="^[a-zA-Z0-9_.-]+$" title="Hanya huruf, angka, underscore, titik, atau dash. Minimal 4, Maksimal 16 karakter.">
+            </div>
+            <div class="form-group" style="width:220px">
+                <label for="hostingPackage">Paket Hosting:</label>
+                <select id="hostingPackage" name="hostingPackage" class="input-glow-border" required>
+                    <option value="" disabled selected>Pilih Paket</option>
+                    <option value="unlimited">Unlimited</option>
+                    <option value="10gb">10 GB</option>
+                    <option value="9gb">9 GB</option>
+                    <option value="8gb">8 GB</option>
+                    <option value="7gb">7 GB</option>
+                    <option value="6gb">6 GB</option>
+                    <option value="5gb">5 GB</option>
+                    <option value="4gb">4 GB</option>
+                    <option value="3gb">3 GB</option>
+                    <option value="2gb">2 GB</option>
+                    <option value="1gb">1 GB</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" id="createButton" class="cyber-button" aria-live="polite">
+            Create Panel
+            <span class="loader-dots" id="loadingSpinner" aria-hidden="true">
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </span>
+        </button>
+    </form>
+
+    <div id="responseMessage" class="" role="status" aria-live="polite"></div>
+</div>
+
+<!-- Toast Notification Container -->
+<div id="toast-notification-container" aria-live="polite"></div>
+
+<!-- FontAwesome (icons) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js" defer></script>
+
+<!-- Main Script -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    /* ------------------------------------------------------------------
+       KONFIGURASI PANEL (PUBLIC, PRIVATE, VVIP, ADMIN)
+    ------------------------------------------------------------------ */
+    const PUBLIC_PANEL_CONFIG = {
+        domain: "publicraraaimupp.cfxcloud.com",
+        ptla: "ptla_8ZEAF13VZNx5GGhQRTjlGisRSk44sWL2cq4VanQY5nu",
+        ptlc: "ptlc_7iUmcvj8wbaskn1pUr2TVqTn6530CYb01zMSVk8Eha3",
+        eggId: "15", nestId: "5", loc: "1"
+    };
+
+    const PRIVATE_PANEL_CONFIG = {
+        domain: "reyznew.storedigital.web.id",
+        ptla: "ptla_v5zKgL35xvLXrt6qxJXiJsMfpuKR1Z01D1iTCK0fQd9",
+        ptlc: "ptlc_q55RiG5RqYpRlSCTyWo0sFbanF4zfw3ChUU5wwn0HQX",
+        eggId: "15", nestId: "5", loc: "1"
+    };
+
+    const VVIP_PANEL_CONFIG = {
+        domain: "vvippppp.sallnetwork.web.id",
+        ptla: "ptla_CqoE3BbLtoTYUhxx7ZeLguZcD3rnbUTmGUxL7Vl9dBE",
+        ptlc: "ptlc_IfZBI1kQfP0JukDyZ0QKRlL04ETJImCYI3Iofqfo2Pr",
+        eggId: "15", nestId: "5", loc: "1"
+    };
+
+    const ADMIN_PANEL_CONFIG = {
+        domain: "vvippppp.sallnetwork.web.id",
+        ptla: "ptla_CqoE3BbLtoTYUhxx7ZeLguZcD3rnbUTmGUxL7Vl9dBE",   // <- Ganti dengan PTLA Admin Anda
+        ptlc: "ptlc_IfZBI1kQfP0JukDyZ0QKRlL04ETJImCYI3Iofqfo2Pr",   // <- Ganti dengan PTLC Admin Anda
+        eggId: "15", nestId: "5", loc: "1"
+    };
+
+    // Flags
+    const IS_PUBLIC_PANEL_ENABLED  = true;
+    const IS_PRIVATE_PANEL_ENABLED = true;
+    const IS_VVIP_PANEL_ENABLED    = true;
+    const IS_ADMIN_PANEL_ENABLED   = true;
+
+    const WEBSITE_ACCESS_KEY = "reyzhost";
+
+    // NOTE: we're going to construct the full URL dynamically below.
+    const BASE_URL_PTERODACTYL_API = "https://restapi.mat.web.id/api/pterodactyl/create";
+
+    const PACKAGES = {
+        "1gb":{ram:1024,disk:1024,cpu:100,name:"1 GB"},
+        "2gb":{ram:2048,disk:2048,cpu:100,name:"2 GB"},
+        "3gb":{ram:3072,disk:3072,cpu:100,name:"3 GB"},
+        "4gb":{ram:4096,disk:4096,cpu:100,name:"4 GB"},
+        "5gb":{ram:5120,disk:5120,cpu:100,name:"5 GB"},
+        "6gb":{ram:6144,disk:6144,cpu:100,name:"6 GB"},
+        "7gb":{ram:7168,disk:7168,cpu:100,name:"7 GB"},
+        "8gb":{ram:8192,disk:8192,cpu:100,name:"8 GB"},
+        "9gb":{ram:9216,disk:9216,cpu:150,name:"9 GB"},
+        "10gb":{ram:10240,disk:10240,cpu:200,name:"10 GB"},
+        "unlimited":{ram:0,disk:0,cpu:0,name:"Unlimited"}
+    };
+    /* ------------------------------------------------------------------ */
+
+    const createPanelForm = document.getElementById('createPanelForm');
+    const createButton    = document.getElementById('createButton');
+    const responseDiv     = document.getElementById('responseMessage');
+    const loadingSpinner  = document.getElementById('loadingSpinner');
+    const panelTypeSelect = document.getElementById('panelType');
+    const toastContainer  = document.getElementById('toast-notification-container');
+
+    /* ---------- Helper Toast ---------- */
+    function showToast(type, msg, dur = 3000) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification ' + type;
+        toast.innerHTML = `
+            <span class="icon">
+                ${type === 'success' ? '<i class="fas fa-check-circle"></i>' : ''}
+                ${type === 'error'   ? '<i class="fas fa-times-circle"></i>' : ''}
+                ${type === 'info'    ? '<i class="fas fa-info-circle"></i>'  : ''}
+            </span>
+            <span class="message">${escapeHtml(msg)}</span>
+            <button class="close-btn" aria-label="Close notification">&times;</button>`;
+        toast.querySelector('.close-btn').onclick = () => toast.remove();
+        toastContainer.appendChild(toast);
+        setTimeout(() => { if (toast.parentNode) toast.remove(); }, dur);
+    }
+
+    /* simple escaper for toast messages to avoid injecting HTML */
+    function escapeHtml(unsafe) {
+        return String(unsafe)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+    }
+
+    /* ---------- Populate Dropdown ---------- */
+    function populatePanelTypeDropdown() {
+        panelTypeSelect.innerHTML = '<option value="" disabled selected>Pilih Tipe Panel</option>';
+        let added = 0;
+        if (IS_PUBLIC_PANEL_ENABLED)  { panelTypeSelect.appendChild(new Option('Public Panel',  'public'));  added++; }
+        if (IS_PRIVATE_PANEL_ENABLED) { panelTypeSelect.appendChild(new Option('Private Panel', 'private')); added++; }
+        if (IS_VVIP_PANEL_ENABLED)    { panelTypeSelect.appendChild(new Option('VVIP Panel',    'vvip'));    added++; }
+        if (IS_ADMIN_PANEL_ENABLED)   { panelTypeSelect.appendChild(new Option('Admin Panel',   'admin'));   added++; }
+        if (added === 0)  { panelTypeSelect.appendChild(new Option('Tidak ada panel tersedia', '', true, true)); panelTypeSelect.disabled = true; }
+        else if (added === 1) panelTypeSelect.selectedIndex = 1;
+    }
+
+    /* ---------- Copy Functions ---------- */
+    responseDiv.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('copy-button')) {
+            const tgtId = e.target.dataset.copyTarget;
+            const text  = document.getElementById(tgtId)?.textContent;
+            if (!text) return;
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('info', 'Disalin: ' + text.substring(0, 60) + (text.length>60 ? '...' : ''));
+                const original = e.target.textContent;
+                e.target.textContent = 'Copied!';
+                setTimeout(() => { e.target.textContent = original; }, 1500);
+            } catch (err) { showToast('error', 'Gagal menyalin!'); }
+        } else if (e.target.classList.contains('copy-all-button')) {
+            const text = e.target.dataset.copyValue;
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('info', 'Semua detail berhasil disalin!');
+                const original = e.target.textContent;
+                e.target.textContent = 'All Copied!';
+                setTimeout(() => e.target.textContent = original, 1500);
+            } catch { showToast('error', 'Gagal menyalin semua!'); }
+        }
+    });
+
+    /* ---------- Form Submit ---------- */
+    createPanelForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        createButton.disabled = true;
+        loadingSpinner.style.display = 'inline-flex';
+        responseDiv.innerHTML = '';
+        responseDiv.className = '';
+
+        const accessKey = document.getElementById('accessKey').value.trim();
+        const panelType = panelTypeSelect.value;
+        const username  = document.getElementById('username').value.trim();
+        const pkg       = document.getElementById('hostingPackage').value;
+
+        if (accessKey !== WEBSITE_ACCESS_KEY) { showToast('error', 'Access Key Salah!'); return resetBtn(); }
+        if (!panelType)                      { showToast('error', 'Silakan pilih tipe panel!'); return resetBtn(); }
+        if (!username || !pkg)               { showToast('error', 'Username & paket harus diisi!'); return resetBtn(); }
+        if (!document.getElementById('username').checkValidity()) { showToast('error', 'Username tidak valid'); return resetBtn(); }
+
+        let cfg;
+        if (panelType === 'public')  cfg = PUBLIC_PANEL_CONFIG;
+        else if (panelType === 'private') cfg = PRIVATE_PANEL_CONFIG;
+        else if (panelType === 'vvip')    cfg = VVIP_PANEL_CONFIG;
+        else if (panelType === 'admin')   cfg = ADMIN_PANEL_CONFIG;
+        else { showToast('error', 'Tipe panel tidak valid'); return resetBtn(); }
+
+        const pkgInfo = PACKAGES[pkg];
+        if (!pkgInfo) { showToast('error','Paket tidak valid'); return resetBtn(); }
+
+        // Build query params. If unlimited (0 values), we still send zeros.
+        const params = new URLSearchParams({
+            username: username,
+            ram: String(pkgInfo.ram),
+            disk: String(pkgInfo.disk),
+            cpu: String(pkgInfo.cpu),
+            eggid: String(cfg.eggId),
+            nestid: String(cfg.nestId),
+            loc: String(cfg.loc),
+            domain: cfg.domain,
+            ptla: cfg.ptla,
+            ptlc: cfg.ptlc
+        });
+
+        const url = BASE_URL_PTERODACTYL_API + '?' + params.toString();
+
+        try {
+            const res  = await fetch(url, { method: 'GET' });
+            const data = await res.json().catch(()=>({}));
+            if (res.ok && data && (data.status || data.result)) {
+                const r = data.result || {};
+                const domainUrl = r.domain || cfg.domain;
+                const fullText = `
+==============================
+DETAIL AKUN PANEL ANDA
+==============================
+Username: ${r.username || username}
+Password: ${r.password || '-'}
+Paket: ${pkgInfo.name}
+Tipe Panel: ${panelType.toUpperCase()}
+ID User: ${r.id_user || '-'}
+Server ID: ${r.id_server || '-'}
+Domain: ${domainUrl}
+==============================`;
+
+                responseDiv.innerHTML = `
+<div class="result-title">Panel Berhasil Dibuat!</div>
+<div class="result-row"><span>Username:</span> <span id="copyUsernameValue">${r.username || username}</span></div>
+<div class="result-row"><span>Password:</span> <span id="copyPasswordValue">${r.password || '-'}</span></div>
+<div class="result-row"><span>Paket:</span> <span>${pkgInfo.name}</span></div>
+<div class="result-row"><span>Tipe Panel:</span> <span>${panelType.toUpperCase()}</span></div>
+<div class="result-row"><span>ID User:</span> <span>${r.id_user || '-'}</span></div>
+<div class="result-row"><span>Server ID:</span> <span>${r.id_server || '-'}</span></div>
+<div class="result-row"><span>Domain:</span> <span id="copyDomainValue"><a href="${domainUrl}" target="_blank" rel="noopener noreferrer">${domainUrl}</a></span></div>
+<div class="result-actions">
+    <button class="copy-button" data-copy-target="copyUsernameValue">Copy Username</button>
+    <button class="copy-button" data-copy-target="copyPasswordValue">Copy Password</button>
+    <button class="copy-button" data-copy-target="copyDomainValue">Copy Domain</button>
+    <button class="login-panel-button" onclick="window.open('${domainUrl}','_blank')">Login Panel</button>
+    <button class="copy-all-button" data-copy-value="${escapeHtml(fullText.trim())}">Copy All Details</button>
+</div>
+<p class="contact-message">Jika tidak bisa login, silakan hubungi <a href="#">Admin</a></p>`;
+                responseDiv.className = 'success';
+                createPanelForm.reset();
+                showToast('success', 'Panel berhasil dibuat!');
+            } else {
+                const msg = (data && (data.message || (data.errors && data.errors[0] && data.errors[0].detail))) || 'Terjadi kesalahan';
+                responseDiv.innerHTML = `<b>Gagal membuat server!</b><br>Pesan: ${escapeHtml(msg)}`;
+                responseDiv.className = 'error';
+                showToast('error', 'Gagal membuat panel!');
+            }
+        } catch (err) {
+            responseDiv.innerHTML = `<b>Terjadi kesalahan jaringan:</b><br>${escapeHtml(err.message||String(err))}`;
+            responseDiv.className = 'error';
+            showToast('error', 'Kesalahan koneksi API!');
+        } finally { resetBtn(); }
+
+        function resetBtn() {
+            createButton.disabled = false;
+            loadingSpinner.style.display = 'none';
+        }
+    });
+
+    /* ---------- Init ---------- */
+    populatePanelTypeDropdown();
+});
+</script>
+
+</body>
+</html>
