@@ -107,7 +107,22 @@
         border-radius: 50px;
         font-size: 14px;
         font-weight: bold;
-        text-transform: uppercase;
+    }
+
+    .logout-btn {
+        width: 94%;
+        margin-top: 14px;
+        padding:10px;
+        border:none;
+        border-radius:10px;
+        background:#ff0044;
+        font-weight:bold;
+        cursor:pointer;
+        transition:0.25s;
+    }
+    .logout-btn:hover {
+        background:#ff2255;
+        transform:scale(1.05);
     }
 </style>
 </head>
@@ -119,7 +134,6 @@
     </video>
 </header>
 
-<!-- CLOCK -->
 <div class="time-banner" id="timeBanner">Loading time...</div>
 
 <!-- PROFILE CARD -->
@@ -128,6 +142,7 @@
     <img id="profileImg" src="" alt="Avatar">
     <h3 class="username-text" id="profileName">Loading...</h3>
     <span class="badge" id="profileRole">Role</span>
+    <button class="logout-btn" onclick="logout()">Logout</button>
 </div>
 
 <h2>🔥 Dashboard Panel</h2>
@@ -142,52 +157,57 @@
 </div>
 
 <script>
-// NAV
-function go(page) {
-    window.location.href = page;
-}
+function go(p){ window.location.href = p; }
 
 // REALTIME CLOCK
-function updateClock() {
-    const now = new Date();
-    const options = { weekday:'short', day:'2-digit', month:'short', year:'numeric' };
-    const date = now.toLocaleDateString('id-ID', options);
-    const time = now.toLocaleTimeString('id-ID');
-    document.getElementById("timeBanner").textContent = `${date} — ${time}`;
+function updateClock(){
+    const n = new Date();
+    document.getElementById("timeBanner").textContent =
+        n.toLocaleDateString('id-ID',{ weekday:'short',day:'2-digit',month:'short',year:'numeric' }) +
+        " — " +
+        n.toLocaleTimeString('id-ID');
 }
 setInterval(updateClock,1000);
 updateClock();
 
-// FETCH USER
-fetch('https://raw.githubusercontent.com/Reyz4YouOfficial/DBCpanel/refs/heads/main/dbpanel.json')
-    .then(res => res.json())
-    .then(data => {
-        const user = data[0];
+// LOGIN VALIDATION
+const loginUser = localStorage.getItem("username");
+if(!loginUser){
+    alert("Silahkan login!");
+    location.href = "index.html";
+}
 
-        document.getElementById("profileImg").src = user.image;
-        document.getElementById("profileName").textContent = user.username;
-        document.getElementById("welcomeText").textContent = `Selamat Datang, ${user.username}!`;
+// FETCH USER DATA
+fetch("https://raw.githubusercontent.com/Reyz4YouOfficial/DBCpanel/refs/heads/main/dbpanel.json")
+.then(r=>r.json())
+.then(d=>{
+    const user = d.find(u=>u.username.toLowerCase()===loginUser.toLowerCase());
+    if(!user){ alert("Akun tidak ditemukan!"); location.href="login.html"; return; }
 
-        const role = user.role.toLowerCase();
-        let icon = "⚡";
-        if (role.includes("owner")) icon = "👑";
-        else if (role.includes("staf vps")) icon = "🛡";
-        else if (role.includes("reseller")) icon = "⭐";
-        else if (role.includes("tangan kanan")) icon = "🎭";
+    document.getElementById("profileImg").src = user.image;
+    document.getElementById("profileName").textContent = user.username;
+    document.getElementById("welcomeText").textContent = `Selamat Datang, ${user.username}!`;
 
-        const profileRole = document.getElementById("profileRole");
-        profileRole.textContent = `${icon} ${user.role}`;
+    let role = user.role.toLowerCase();
+    let icon = role.includes("owner") ? "👑" :
+               role.includes("staf") ? "🛡" :
+               role.includes("reseller") ? "⭐" :
+               role.includes("tangan kanan") ? "🎭" : "⚡";
 
-        if (role.includes("owner")) profileRole.style.background = "#ff0066";
-        else if (role.includes("staf")) profileRole.style.background = "#007bff";
-        else if (role.includes("reseller")) {
-            profileRole.style.background = "#ffc400";
-            profileRole.style.color = "#000";
-        } else if (role.includes("tangan kanan")) {
-            profileRole.style.background = "#8e00ff";
-        }
-    })
-    .catch(err => console.error("Error:", err));
+    const badge = document.getElementById("profileRole");
+    badge.textContent = `${icon} ${user.role}`;
+
+    if (role.includes("owner")) badge.style.background = "#ff0066";
+    else if (role.includes("staf")) badge.style.background = "#007bff";
+    else if (role.includes("reseller")) { badge.style.background = "#ffc400"; badge.style.color = "#000"; }
+    else if (role.includes("tangan kanan")) badge.style.background = "#8e00ff";
+})
+.catch(()=> alert("Gagal memuat database!"));
+
+function logout(){
+    localStorage.clear();
+    location.href = "index.html";
+}
 </script>
 
 </body>
