@@ -18,6 +18,16 @@
         border-bottom:3px solid #00aaff;
     }
 
+    .time-banner {
+        background:#161b22;
+        border-bottom:2px solid #007bff;
+        padding:6px 0;
+        font-size:14px;
+        letter-spacing:1px;
+        box-shadow:0 2px 5px #000;
+        font-weight:bold;
+    }
+
     h2 {
         margin:16px 0;
         font-size:22px;
@@ -50,22 +60,77 @@
     }
 
     @media(max-width:600px) {
-        .menu-container {
-            grid-template-columns:1fr;
-        }
+        .menu-container { grid-template-columns:1fr; }
+    }
+
+    /* PROFILE UI */
+    .profile-card {
+        width: 90%;
+        max-width: 350px;
+        margin: 20px auto;
+        background: linear-gradient(145deg, #1b1f27, #0d1117);
+        padding: 25px;
+        border-radius: 16px;
+        border: 1px solid #00aaff55;
+        box-shadow: 0 0 18px #00aaff33;
+        transition: .3s;
+    }
+    .profile-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 25px #00aaff66;
+    }
+    .profile-card img {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        border: 3px solid #00aaff;
+        object-fit: cover;
+        margin-bottom: 12px;
+    }
+    .welcome-text {
+        margin: 0;
+        font-size: 16px;
+        color:#58a6ff;
+        font-weight: bold;
+        margin-bottom:8px;
+    }
+    .username-text {
+        margin: 0;
+        font-size: 22px;
+        font-weight: bold;
+    }
+    .badge {
+        display: inline-block;
+        margin-top: 6px;
+        padding: 5px 14px;
+        background: #007bff;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: bold;
+        text-transform: uppercase;
     }
 </style>
 </head>
 <body>
 
 <header>
-    <!-- 🎬 BANNER VIDEO -->
     <video autoplay muted loop playsinline>
         <source src="https://files.catbox.moe/nomfwn.mp4" type="video/mp4">
     </video>
 </header>
 
-<h2>🔥 Reyz4You Host Dashboard</h2>
+<!-- CLOCK -->
+<div class="time-banner" id="timeBanner">Loading time...</div>
+
+<!-- PROFILE CARD -->
+<div class="profile-card">
+    <div class="welcome-text" id="welcomeText">Selamat Datang...</div>
+    <img id="profileImg" src="" alt="Avatar">
+    <h3 class="username-text" id="profileName">Loading...</h3>
+    <span class="badge" id="profileRole">Role</span>
+</div>
+
+<h2>🔥 Dashboard Panel</h2>
 
 <div class="menu-container">
     <div class="menu-card" onclick="go('cpanel.html')">⚙ Create Panel</div>
@@ -77,9 +142,52 @@
 </div>
 
 <script>
+// NAV
 function go(page) {
     window.location.href = page;
 }
+
+// REALTIME CLOCK
+function updateClock() {
+    const now = new Date();
+    const options = { weekday:'short', day:'2-digit', month:'short', year:'numeric' };
+    const date = now.toLocaleDateString('id-ID', options);
+    const time = now.toLocaleTimeString('id-ID');
+    document.getElementById("timeBanner").textContent = `${date} — ${time}`;
+}
+setInterval(updateClock,1000);
+updateClock();
+
+// FETCH USER
+fetch('https://raw.githubusercontent.com/Reyz4YouOfficial/DBCpanel/refs/heads/main/dbpanel.json')
+    .then(res => res.json())
+    .then(data => {
+        const user = data[0];
+
+        document.getElementById("profileImg").src = user.image;
+        document.getElementById("profileName").textContent = user.username;
+        document.getElementById("welcomeText").textContent = `Selamat Datang, ${user.username}!`;
+
+        const role = user.role.toLowerCase();
+        let icon = "⚡";
+        if (role.includes("owner")) icon = "👑";
+        else if (role.includes("staf vps")) icon = "🛡";
+        else if (role.includes("reseller")) icon = "⭐";
+        else if (role.includes("tangan kanan")) icon = "🎭";
+
+        const profileRole = document.getElementById("profileRole");
+        profileRole.textContent = `${icon} ${user.role}`;
+
+        if (role.includes("owner")) profileRole.style.background = "#ff0066";
+        else if (role.includes("staf")) profileRole.style.background = "#007bff";
+        else if (role.includes("reseller")) {
+            profileRole.style.background = "#ffc400";
+            profileRole.style.color = "#000";
+        } else if (role.includes("tangan kanan")) {
+            profileRole.style.background = "#8e00ff";
+        }
+    })
+    .catch(err => console.error("Error:", err));
 </script>
 
 </body>
