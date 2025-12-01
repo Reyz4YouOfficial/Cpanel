@@ -178,7 +178,7 @@ if(!loginUser){
 }
 
 // FETCH USER DATA
-fetch("https://raw.githubusercontent.com/Reyz4YouOfficial/DBCpanel/refs/heads/main/dbpanel.json")
+fetch("https://raw.githubusercontent.com/Reyz4YouOfficial/DBCpanel/refs/heads/main/backup.json")
 .then(r=>r.json())
 .then(d=>{
     const user = d.find(u=>u.username.toLowerCase()===loginUser.toLowerCase());
